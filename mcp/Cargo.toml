@@ -1,0 +1,34 @@
+[package]
+name = "ink_mcp"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT OR Apache-2.0"
+description = "Ink MCP server exposing the orchestration engine to agentic IDEs."
+keywords = ["mcp", "orchestration", "context", "agents"]
+categories = ["development-tools"]
+
+[dependencies]
+context_optimizer = { path = "../crates/context_optimizer" }
+dependency_graph = { path = "../crates/dependency_graph" }
+repository_intelligence = { path = "../crates/repository_intelligence" }
+
+anyhow = "1"
+rmcp = { version = "2.2", features = ["server", "macros", "transport-io"] }
+schemars = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["http1", "tokio"], default-features = false, optional = true }
+
+[features]
+default = []
+# Streamable HTTP transport (axum + rmcp streamable-http server).
+http = ["dep:axum", "rmcp/transport-streamable-http-server"]
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = true
+strip = true
