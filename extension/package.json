@@ -2,8 +2,8 @@
   "name": "ink",
   "displayName": "Ink",
   "description": "A VS Code extension frontend for AI orchestration dashboards, runtime previews, agents, analytics, and cache visibility.",
-  "version": "1.0.0",
-  "publisher": "ink",
+  "version": "1.0.1",
+  "publisher": "ninja75",
   "icon": "assets/icon.png",
   "engines": {
     "vscode": "^1.92.0"
