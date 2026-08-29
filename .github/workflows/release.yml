@@ -50,7 +50,7 @@ jobs:
             tar -czf "${NAME}.tar.gz" -C dist ink_mcp
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ink_mcp-${{ matrix.target }}
           path: ink_mcp-${{ matrix.target }}.*
@@ -119,7 +119,7 @@ jobs:
           fi
           npx --yes @vscode/vsce package $ARGS
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: vsix-${{ matrix.id }}
           path: extension/*.vsix
