@@ -1,0 +1,39 @@
+# Ink MCP server over Streamable HTTP.
+#
+#   cp .env.example .env      # then set INK_API_TOKEN
+#   docker compose up -d      # server on http://localhost:3000/mcp
+#   docker compose --profile tools up -d   # + MCP Inspector UI
+#
+services:
+  ink-mcp:
+    build: .
+    image: ink-mcp:local
+    ports:
+      - "${INK_PORT:-3000}:3000"
+    environment:
+      INK_REPORT_DIR: /data/reports
+    volumes:
+      - ink-reports:/data/reports
+    restart: unless-stopped
+    # tini as PID 1 so SIGTERM reaches ink_mcp for graceful shutdown.
+    init: true
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/127.0.0.1/3000'"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Optional: MCP Inspector web UI, pre-wired to reach the server over the
+  # compose network. Open http://localhost:6274, choose Transport: Streamable
+  # HTTP, URL: http://ink-mcp:3000/mcp.
+  mcp-inspector:
+    image: node:22-alpine
+    profiles: ["tools"]
+    command: sh -c "npx -y @modelcontextprotocol/inspector"
+    ports:
+      - "6274:6274"
+      - "6277:6277"
+
+volumes:
+  ink-reports:

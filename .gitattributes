@@ -1,0 +1,18 @@
+* text=auto
+*.rs text diff=rust
+*.ts text
+*.tsx text
+*.js text
+*.json text
+*.md text
+*.toml text
+*.yml text
+*.yaml text
+*.html text
+*.css text
+*.sh text eol=lf
+*.bat text eol=crlf
+*.png binary
+*.ico binary
+*.gif binary
+*.jpg binary

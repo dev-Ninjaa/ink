@@ -1,0 +1,16 @@
+# Rust
+/target
+
+# Node / VS Code extension
+node_modules/
+out/
+*.vsix
+.vscode-test/
+
+# Runtime artifacts
+reports/
+
+# Environment & OS
+.env
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+target/
+extension/
+node_modules/
+out/
+.vscode-test/
+reports/
+.git/
+.env
+*.md
+!README.md
