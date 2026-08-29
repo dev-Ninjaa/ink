@@ -1,0 +1,243 @@
+{
+  "name": "ink",
+  "displayName": "Ink",
+  "description": "A VS Code extension frontend for AI orchestration dashboards, runtime previews, agents, analytics, and cache visibility.",
+  "version": "0.3.1",
+  "publisher": "ink",
+  "icon": "assets/icon.png",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "orchestration",
+    "agents",
+    "analytics",
+    "cache",
+    "dashboard",
+    "runtime"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev-Ninjaa/ink"
+  },
+  "bugs": {
+    "url": "TODO: add issue tracker URL before publishing"
+  },
+  "homepage": "TODO: add project homepage URL before publishing",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:ink.dashboard",
+    "onView:ink.analytics",
+    "onView:ink.agents",
+    "onView:ink.cache",
+    "onCommand:ink.openDashboard",
+    "onCommand:ink.optimizeContext",
+    "onCommand:ink.buildDependencyGraph",
+    "onCommand:ink.scheduleAgents",
+    "onCommand:ink.generateReport",
+    "onCommand:ink.clearCache",
+    "onCommand:ink.restartServer",
+    "onCommand:ink.checkForUpdates"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ink.openDashboard",
+        "title": "Ink: Open Dashboard",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.optimizeContext",
+        "title": "Ink: Optimize Context",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.buildDependencyGraph",
+        "title": "Ink: Build Dependency Graph",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.scheduleAgents",
+        "title": "Ink: Schedule Agents",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.generateReport",
+        "title": "Ink: Generate Report",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.clearCache",
+        "title": "Ink: Clear Cache",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.restartServer",
+        "title": "Ink: Restart MCP Server",
+        "category": "Ink"
+      },
+      {
+        "command": "ink.checkForUpdates",
+        "title": "Ink: Check for Server Updates",
+        "category": "Ink"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ink",
+          "title": "Ink",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ink": [
+        {
+          "type": "webview",
+          "id": "ink.dashboard",
+          "name": "Dashboard"
+        },
+        {
+          "type": "webview",
+          "id": "ink.analytics",
+          "name": "Analytics"
+        },
+        {
+          "id": "ink.agents",
+          "name": "Agents"
+        },
+        {
+          "id": "ink.cache",
+          "name": "Cache"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Ink",
+      "properties": {
+        "ink.enableCache": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Ink cache features."
+        },
+        "ink.enableAnalytics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Ink analytics features."
+        },
+        "ink.enableParallelism": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable parallel agent orchestration features."
+        },
+        "ink.maxAgents": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 32,
+          "description": "Maximum number of agents Ink may schedule."
+        },
+        "ink.mcpServer.command": {
+          "type": "string",
+          "default": "",
+          "description": "Command used to launch the Ink MCP server (ink_mcp). Empty = auto-detect the sibling ink.mcpServer build, else fall back to `ink_mcp` on PATH."
+        },
+        "ink.mcpServer.args": {
+          "type": "array",
+          "default": [
+            "--transport",
+            "stdio"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Arguments passed to the Ink MCP server command."
+        },
+        "ink.mcpServer.autoDownload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically download the Ink MCP server binary when the extension activates (no manual npm install required). Set to false to manage the binary yourself."
+        },
+        "ink.mcpServer.transport": {
+          "type": "string",
+          "enum": [
+            "stdio",
+            "http"
+          ],
+          "default": "stdio",
+          "description": "How Ink connects to the MCP server: spawn a local binary (stdio) or attach to a shared Streamable HTTP server."
+        },
+        "ink.mcpServer.url": {
+          "type": "string",
+          "default": "",
+          "description": "Streamable HTTP endpoint of the Ink MCP server (e.g. https://ink.example.com/mcp). Used when transport is http."
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "ink.openDashboard",
+          "when": "view == ink.dashboard",
+          "group": "navigation"
+        },
+        {
+          "command": "ink.clearCache",
+          "when": "view == ink.cache && ink.workspaceOpen",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ink.optimizeContext",
+          "when": "ink.workspaceOpen"
+        },
+        {
+          "command": "ink.buildDependencyGraph",
+          "when": "ink.workspaceOpen"
+        },
+        {
+          "command": "ink.scheduleAgents",
+          "when": "ink.workspaceOpen"
+        },
+        {
+          "command": "ink.generateReport",
+          "when": "ink.workspaceOpen"
+        },
+        {
+          "command": "ink.clearCache",
+          "when": "ink.workspaceOpen"
+        },
+        {
+          "command": "ink.restartServer"
+        },
+        {
+          "command": "ink.checkForUpdates"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "npm run compile && node ./out/tests/runTest.js",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^26.2.0",
+    "@types/vscode": "1.92.0",
+    "@vscode/test-electron": "^3.1.0",
+    "mocha": "^11.8.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  }
+}
