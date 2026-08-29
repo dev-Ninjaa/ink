@@ -19,7 +19,7 @@ task, and what work is already underway?*
 ### npx (quickest)
 
 ```bash
-npx ink-mcp
+npx mcp-ink
 ```
 
 Downloads the platform binary on first run. No Rust toolchain needed.
@@ -82,7 +82,7 @@ Two kinds of consumers, one protocol:
 | [`crates/context_optimizer`](crates/context_optimizer) | Token-budget context selection: chosen files, dropped files, token metrics |
 | [`mcp`](mcp/README.md) | `ink_mcp` rmcp server — stdio (default) and Streamable HTTP transports |
 | [`extension`](extension/README.md) | VS Code extension: dashboard, analytics, agents, cache views, interactive dependency graph panel |
-| [`npm/ink-mcp`](npm/ink-mcp) | npm wrapper — detects platform, downloads the right binary, forwards CLI args |
+| [`npm/ink-mcp`](npm/ink-mcp) | npm wrapper (`mcp-ink`) — detects platform, downloads the right binary, forwards CLI args |
 
 ## Quick start
 
@@ -90,7 +90,7 @@ Prerequisites: Rust ≥ 1.75 (stable), Node.js or Bun, VS Code (for the extensio
 
 ```bash
 # Or via npx (no Rust needed)
-npx ink-mcp
+npx mcp-ink
 
 # Build + test everything
 cargo test                          # engine crates + MCP server (150+ tests)
@@ -126,7 +126,7 @@ Add to your agent's MCP config (IBM Bob, Claude Code, Cursor, etc.):
   "mcpServers": {
     "ink": {
       "command": "npx",
-      "args": ["-y", "ink-mcp"]
+      "args": ["-y", "mcp-ink"]
     }
   }
 }
@@ -196,7 +196,7 @@ Connecting is enough for tool *access*; agents orchestrate better with
 | **CI** | Every push / PR | `cargo fmt`, `clippy`, `cargo test`, extension `tsc` + tests |
 | **Docker** | Push to `main` or `v*` tag | Build image, smoke-test MCP handshake, push to `ghcr.io` |
 | **Release** | `v*` tag push or manual dispatch | Build binaries (Linux, macOS ARM, Windows), VSIX packages, create GitHub Release with SHA256 checksums |
-| **npm publish** | After Release completes, or manual | Publish `ink-mcp` wrapper to npm |
+| **npm publish** | After Release completes, or manual | Publish `mcp-ink` wrapper to npm |
 
 To ship a release:
 
@@ -206,7 +206,7 @@ To ship a release:
 git tag v0.4.0
 git push origin v0.4.0
 # 3. GitHub Actions builds binaries, VSIX packages, and creates the release.
-# 4. npm publish workflow publishes ink-mcp to npm automatically.
+# 4. npm publish workflow publishes mcp-ink to npm automatically.
 ```
 
 Or trigger manually from the **Actions** tab using **workflow_dispatch**.
@@ -235,7 +235,7 @@ Conventions: Conventional Commits; Rust changes need green `cargo test` +
 - VS Code extension: dashboard, analytics, agents, interactive graph panel,
   optimize panel, HTTP transport mode
 - Platform binaries on GitHub Releases (Linux, macOS ARM, Windows)
-- npm package `ink-mcp` — `npx ink-mcp` gets you running in seconds
+- npm package `mcp-ink` — `npx mcp-ink` gets you running in seconds
 - Docker image on `ghcr.io` with healthcheck
 - Full CI/CD: lint → test → build → release → npm publish
 - Agent skill file with decision table and pipeline recipes
