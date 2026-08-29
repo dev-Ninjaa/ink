@@ -1,0 +1,25 @@
+{
+  "name": "ink-mcp",
+  "version": "0.3.1",
+  "description": "Ink orchestration runtime — MCP server for IBM Bob Agent Mode",
+  "license": "MIT",
+  "repository": "https://github.com/dev-Ninjaa/ink",
+  "bin": {
+    "ink-mcp": "bin/ink-mcp.js",
+    "ink_mcp": "bin/ink-mcp.js"
+  },
+  "files": [
+    "bin/",
+    "postinstall.js"
+  ],
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "keywords": [
+    "mcp",
+    "agent",
+    "orchestration",
+    "ibm",
+    "bob"
+  ]
+}
