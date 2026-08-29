@@ -1,0 +1,5 @@
+{
+  "name": "api",
+  "main": "src/index.ts",
+  "dependencies": { "express": "^4.19.0" }
+}
