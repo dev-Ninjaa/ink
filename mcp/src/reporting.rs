@@ -81,7 +81,7 @@ fn append_to(path: &Path, contents: &str) -> std::io::Result<()> {
 struct Stamp {
     /// Sortable, filename-safe representation.
     file: String,
-    /// Human-readable UTC representation. 
+    /// Human-readable UTC representation.
     human: String,
 }
 
@@ -360,7 +360,7 @@ mod tests {
 
     #[test]
     fn known_date_rounds_correctly() {
-        let days = 20_681; 
+        let days = 20_681;
         let (y, mo, d) = civil_from_days(days);
         assert_eq!((y, mo, d), (2026, 8, 29));
     }
