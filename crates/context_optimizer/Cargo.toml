@@ -1,0 +1,26 @@
+[package]
+name = "context_optimizer"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "A relevant-file selection, near-duplicate removal and token-budget optimizer for the Ink platform."
+keywords = ["context", "optimization", "tokens", "deduplication", "selection", "llm"]
+categories = ["development-tools", "text-processing"]
+readme = "README.md"
+
+[dependencies]
+rayon.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+repository_intelligence = { path = "../repository_intelligence" }
+dependency_graph = { path = "../dependency_graph" }
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+
+[[bench]]
+name = "context_optimizer"
+harness = false
