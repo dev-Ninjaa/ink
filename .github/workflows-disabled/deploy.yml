@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  # Automatic: after a successful Docker run on main (image built, smoke
+  # tested, and published).
+  workflow_run:
+    workflows: ["Docker"]
+    types: [completed]
+  # Manual: "Run workflow" button for on-demand redeploys.
+  workflow_dispatch:
+
+jobs:
+  render:
+    name: Deploy to Render
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::notice::RENDER_DEPLOY_HOOK secret is not set — skipping Render deploy."
+            exit 0
+          fi
+          HTTP_CODE=$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$HOOK")
+          echo "Render responded with $HTTP_CODE"
