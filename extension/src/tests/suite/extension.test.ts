@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 
 suite("Ink extension", () => {
   test("is present in the extension host", async () => {
-    const extension = vscode.extensions.getExtension("ink.ink");
+    const extension = vscode.extensions.getExtension("ninja75.ink");
     assert.ok(extension);
   });
 });
