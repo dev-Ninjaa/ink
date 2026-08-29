@@ -1,0 +1,34 @@
+[package]
+name = "repository_intelligence"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description.workspace = true
+keywords.workspace = true
+categories.workspace = true
+readme = "README.md"
+
+[dependencies]
+walkdir.workspace = true
+ignore.workspace = true
+rayon.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+regex.workspace = true
+dashmap.workspace = true
+dhat = { workspace = true, optional = true }
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+
+[features]
+default = []
+# Enables in-benchmark heap profiling via the `dhat` crate (see benches/repository_analysis.rs).
+heap-profiling = ["dep:dhat"]
+
+[[bench]]
+name = "repository_analysis"
+harness = false
