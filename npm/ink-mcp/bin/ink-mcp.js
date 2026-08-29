@@ -9,9 +9,7 @@ const executable = process.platform === "win32" ? "ink_mcp.exe" : "ink_mcp";
 const binaryPath = path.join(binDir, executable);
 
 if (!fs.existsSync(binaryPath)) {
-  console.error(
-    "ink-mcp: binary not found. Run `npm install ink-mcp` to download it."
-  );
+  console.error("@ink/mcp: binary not found. Run `npm install @ink/mcp` to download it.");
   process.exit(1);
 }
 

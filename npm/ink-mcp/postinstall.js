@@ -6,7 +6,7 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const REPO = "akshad-exe/ink";
+const REPO = "dev-Ninjaa/ink";
 
 const PLATFORM_MAP = {
   "x64-linux": { rust: "x86_64-unknown-linux-gnu", ext: "tar.gz" },
@@ -67,14 +67,14 @@ async function main() {
   const binaryPath = path.join(binDir, executable);
 
   if (fs.existsSync(binaryPath)) {
-    console.log(`ink-mcp: binary already present at ${binaryPath}`);
+    console.log(`@ink/mcp: binary already present at ${binaryPath}`);
     return;
   }
 
   const filename = `ink_mcp-${rust}.${ext}`;
   const url = `https://github.com/${REPO}/releases/download/${version}/${filename}`;
 
-  console.log(`ink-mcp: downloading ${url}`);
+  console.log(`@ink/mcp: downloading ${url}`);
 
   fs.mkdirSync(binDir, { recursive: true });
   const archivePath = path.join(binDir, filename);
@@ -93,11 +93,11 @@ async function main() {
     fs.chmodSync(binaryPath, 0o755);
   }
 
-  console.log(`ink-mcp: ready at ${binaryPath}`);
+  console.log(`@ink/mcp: ready at ${binaryPath}`);
 }
 
 main().catch((err) => {
-  console.error(`ink-mcp: install failed — ${err.message}`);
+  console.error(`@ink/mcp: install failed — ${err.message}`);
   console.error("You can set INK_MCP_VERSION to override the release tag.");
   process.exit(1);
 });
