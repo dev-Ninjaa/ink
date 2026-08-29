@@ -1,0 +1,17 @@
+name: Security
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  cargo-audit:
+    name: RustSec advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ github.token }}

@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # Manual: builds and publishes using the version from
+  # extension/package.json when no tag exists yet.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  binaries:
+    name: ink_mcp (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: macos-14, target: aarch64-apple-darwin }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build ink_mcp
+        run: cargo build --release -p ink_mcp --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist
+          NAME="ink_mcp-${{ matrix.target }}"
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            cp "target/${{ matrix.target }}/release/ink_mcp.exe" dist/
+            (cd dist && 7z a "../${NAME}.zip" ink_mcp.exe)
+          else
+            cp "target/${{ matrix.target }}/release/ink_mcp" dist/
+            tar -czf "${NAME}.tar.gz" -C dist ink_mcp
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ink_mcp-${{ matrix.target }}
+          path: ink_mcp-${{ matrix.target }}.*
+          if-no-files-found: error
+
+  vsix:
+    name: VSIX (${{ matrix.id }})
+    needs: [binaries]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: universal
+            vscode_target: ""
+            rust_artifact: ""
+          - id: win32-x64
+            vscode_target: win32-x64
+            rust_artifact: ink_mcp-x86_64-pc-windows-msvc
+          - id: darwin-arm64
+            vscode_target: darwin-arm64
+            rust_artifact: ink_mcp-aarch64-apple-darwin
+          - id: linux-x64
+            vscode_target: linux-x64
+            rust_artifact: ink_mcp-x86_64-unknown-linux-gnu
+    runs-on: ubuntu-latest
+    env:
+      VSCODE_TARGET: ${{ matrix.vscode_target }}
+      RUST_ARTIFACT: ${{ matrix.rust_artifact }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+
+      - name: Download platform binary
+        if: matrix.rust_artifact != ''
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ matrix.rust_artifact }}
+          path: extension/bin-download
+
+      - name: Extract binary
+        if: matrix.rust_artifact != ''
+        run: |
+          mkdir -p extension/bin
+          if compgen -G "extension/bin-download/*.zip" > /dev/null; then
+            unzip -j extension/bin-download/*.zip -d extension/bin
+          else
+            tar -xzf extension/bin-download/*.tar.gz -C extension/bin
+          fi
+          chmod +x extension/bin/ink_mcp* 2>/dev/null || true
+          ls -la extension/bin
+
+      - run: npm ci
+        working-directory: extension
+
+      - name: Package VSIX
+        working-directory: extension
+        run: |
+          ARGS="--no-dependencies"
+          if [ -n "$VSCODE_TARGET" ]; then
+            ARGS="$ARGS --target $VSCODE_TARGET"
+          fi
+          npx --yes @vscode/vsce package $ARGS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix-${{ matrix.id }}
+          path: extension/*.vsix
+          if-no-files-found: error
+
+  publish:
+    name: GitHub Release
+    needs: [binaries, vsix]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Collect artifacts and checksums
+        run: |
+          mkdir dist
+          find artifacts -type f -exec mv {} dist/ \;
+          cd dist
+          shasum -a 256 * > SHA256SUMS.txt
+          ls -la
+
+      - name: Resolve release tag
+        id: ver
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(node -p "require('./extension/package.json').version")
+            echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/* --clobber \
+              --repo "$GITHUB_REPOSITORY"
+            echo "Updated existing release $RELEASE_TAG"
+          else
+            gh release create "$RELEASE_TAG" \
+              --title "Ink $RELEASE_TAG" \
+              --generate-notes \
+              --target "$GITHUB_SHA" \
+              dist/* \
+              --repo "$GITHUB_REPOSITORY"
+            echo "Created release $RELEASE_TAG"
+          fi
+
+  publish-marketplace:
+    name: VS Code Marketplace
+    needs: [vsix]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Publish all VSIX targets to Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          npm install --global @vscode/vsce
+          for vsix in artifacts/**/*.vsix; do
+            echo "Publishing $vsix"
+            vsce publish --packagePath "$vsix" --pat "$VSCE_PAT" --no-dependencies
+          done
