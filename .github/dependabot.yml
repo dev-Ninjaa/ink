@@ -1,0 +1,36 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # Majors need a deliberate migration; close-and-revisit instead of
+      # weekly reopen churn.
+      - dependency-name: rmcp
+        versions: [">=3"]
+      - dependency-name: criterion
+        versions: [">=0.6"]
+
+  - package-ecosystem: npm
+    directory: /extension
+    schedule:
+      interval: weekly
+    ignore:
+      # Keep VS Code type defs pinned to the minimum supported engine;
+      # newer @types/vscode makes vsce packaging fail.
+      - dependency-name: "@types/vscode"
+        versions: [">=1.93"]
+      # TypeScript 6+ is the native/Go rewrite line; drops automatic Node
+      # type acquisition, breaking this toolchain. Migrate deliberately.
+      - dependency-name: typescript
+        versions: [">=6"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # v7+ does not exist yet; auto-merge breaks Release workflow.
+      - dependency-name: actions/setup-node
+        versions: [">=5"]
