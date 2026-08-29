@@ -1,5 +1,5 @@
 {
-  "name": "ink server",
+  "name": "ink-server",
   "displayName": "Ink Server",
   "description": "A VS Code extension frontend for AI orchestration dashboards, runtime previews, agents, analytics, and cache visibility.",
   "version": "1.0.1",
