@@ -1,5 +1,5 @@
 {
-  "name": "@ink/mcp",
+  "name": "ink-mcp",
   "version": "1.0.0",
   "description": "Ink orchestration runtime — MCP server for IBM Bob Agent Mode",
   "license": "MIT",
