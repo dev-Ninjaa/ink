@@ -33,14 +33,14 @@ archives for Linux, macOS (Apple Silicon), and Windows.
 ### VS Code Extension
 
 Install from the
-[Marketplace](https://marketplace.visualstudio.com/items?itemName=akshadexe.ink)
+[Marketplace](https://marketplace.visualstudio.com/items?itemName=ninja75.ink-server)
 or download a `.vsix` from GitHub Releases. Platform-specific builds bundle the
 MCP server automatically — install the extension and the server is ready.
 
 ### Docker / hosted
 
 ```bash
-docker run --init -p 3000:3000 ghcr.io/akshad-exe/ink:latest
+docker run --init -p 3000:3000 ghcr.io/dev-Ninjaa/ink:latest
 # → http://localhost:3000/mcp
 ```
 
