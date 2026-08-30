@@ -6,7 +6,7 @@ import { execSync } from "child_process";
 import * as vscode from "vscode";
 import { Logger } from "./Logger";
 
-const REPO = "akshad-exe/ink";
+const REPO = "dev-Ninjaa/ink";
 
 const PLATFORM_MAP: Record<string, { rust: string; ext: "tar.gz" | "zip" }> = {
   "x64-linux": { rust: "x86_64-unknown-linux-gnu", ext: "tar.gz" },
@@ -105,7 +105,11 @@ export class BinaryBootstrapService {
           fs.writeFileSync(archivePath, buf);
 
           if (ext === "zip") {
-            execSync(`unzip -j -o "${archivePath}" -d "${binDir}"`, { stdio: "pipe" });
+            // Use PowerShell's Expand-Archive — `unzip` is not built-in on Windows.
+            execSync(
+              `powershell -NoProfile -Command "Expand-Archive -Force -LiteralPath '${archivePath}' -DestinationPath '${binDir}'"`,
+              { stdio: "pipe" }
+            );
           } else {
             execSync(`tar -xzf "${archivePath}" -C "${binDir}"`, { stdio: "pipe" });
           }

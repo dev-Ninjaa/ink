@@ -32,7 +32,7 @@ export class RuntimeManager implements ManagedRuntime, RuntimeProvider {
   private version: RuntimeVersion;
 
   constructor(
-    private readonly runtimeFactory: RuntimeFactory,
+    private runtimeFactory: RuntimeFactory,
     private readonly workspaceService: WorkspaceService,
     private readonly settingsService: SettingsService,
     private readonly healthService: RuntimeHealthService,
@@ -40,12 +40,17 @@ export class RuntimeManager implements ManagedRuntime, RuntimeProvider {
     private readonly eventBus: EventBus,
     private readonly logger: Logger
   ) {
-    this.version = runtimeFactory.describe();
+    this.version = this.runtimeFactory.describe();
     this.runtime = this.runtimeFactory.createRuntime();
   }
 
   getRuntime(): Runtime {
     return this.runtime;
+  }
+
+  setFactory(factory: RuntimeFactory): void {
+    this.runtimeFactory = factory;
+    this.version = factory.describe();
   }
 
   async start(): Promise<void> {
