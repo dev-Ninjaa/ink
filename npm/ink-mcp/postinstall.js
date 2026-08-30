@@ -82,7 +82,11 @@ async function main() {
   fs.writeFileSync(archivePath, buf);
 
   if (ext === "zip") {
-    execSync(`unzip -j -o "${archivePath}" -d "${binDir}"`, { stdio: "inherit" });
+    // Use PowerShell's Expand-Archive on Windows (unzip is not built-in)
+    execSync(
+      `powershell -NoProfile -Command "Expand-Archive -Force -LiteralPath '${archivePath}' -DestinationPath '${binDir}'"`,
+      { stdio: "inherit" }
+    );
   } else {
     execSync(`tar -xzf "${archivePath}" -C "${binDir}"`, { stdio: "inherit" });
   }

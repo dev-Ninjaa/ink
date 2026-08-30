@@ -1,6 +1,6 @@
 {
   "name": "mcp-ink",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Ink orchestration runtime — MCP server for IBM Bob Agent Mode",
   "license": "MIT",
   "repository": "https://github.com/dev-Ninjaa/ink",
