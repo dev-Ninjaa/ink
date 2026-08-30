@@ -19,6 +19,7 @@ import { SettingsService } from "./services/SettingsService";
 import { WorkspaceService } from "./services/WorkspaceService";
 import { ExtensionStateService } from "./state/ExtensionStateService";
 import { toInkError } from "./errors/InkError";
+import { MockRuntimeFactory } from "./mocks/MockRuntimeFactory";
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const logger = new OutputChannelLogger("INK");
@@ -65,7 +66,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   let mcpClient: SdkMcpClient = buildMcpClient(context, mcpServer, bootstrapService, logger);
   healthService.setMcpClient(mcpClient);
 
-  const runtimeFactory = new McpRuntimeFactory(mcpClient, logger);
+  context.subscriptions.push(logger, eventBus, workspaceService, settingsService, stateService);
+  logger.info("Ink extension startup.");
+
+  const mcpConnected = await connectMcpClient(mcpClient, logger, statusBarItem);
+  const runtimeFactory = mcpConnected
+    ? new McpRuntimeFactory(mcpClient, logger)
+    : new MockRuntimeFactory(logger);
+
   const runtimeManager = new RuntimeManager(
     runtimeFactory,
     workspaceService,
@@ -75,11 +83,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     eventBus,
     logger
   );
-
-  context.subscriptions.push(logger, eventBus, workspaceService, settingsService, stateService);
-  logger.info("Ink extension startup.");
-
-  await connectMcpClient(mcpClient, logger, statusBarItem);
 
   const dashboardProvider = new DashboardProvider(runtimeManager, stateService, logger);
   const analyticsProvider = new AnalyticsProvider(runtimeManager, stateService, logger);
@@ -128,7 +131,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         await mcpClient.dispose();
         mcpClient = buildMcpClient(context, settingsService.getMcpServerSettings(), bootstrapService, logger);
         healthService.setMcpClient(mcpClient);
-        await connectMcpClient(mcpClient, logger, statusBarItem);
+        const reconnected = await connectMcpClient(mcpClient, logger, statusBarItem);
+        runtimeManager.setFactory(
+          reconnected
+            ? new McpRuntimeFactory(mcpClient, logger)
+            : new MockRuntimeFactory(logger)
+        );
         await runtimeManager.restart();
         await dashboardProvider.refresh();
         await analyticsProvider.refresh();
@@ -263,7 +271,7 @@ async function connectMcpClient(
   mcpClient: McpClient,
   logger: OutputChannelLogger,
   statusBarItem: vscode.StatusBarItem
-): Promise<void> {
+): Promise<boolean> {
   try {
     await mcpClient.connect();
     const servers = await mcpClient.listServers();
@@ -273,9 +281,11 @@ async function connectMcpClient(
     logger.info(`Ink MCP servers: ${serverList}`);
     statusBarItem.text = "$(check) Ink: connected";
     statusBarItem.tooltip = `Ink MCP Server — ${serverList}\nClick to restart`;
+    return true;
   } catch (error) {
     logger.error("Failed to connect to the Ink MCP server. The extension will keep running with mock data.", error);
     statusBarItem.text = "$(warning) Ink: server offline";
     statusBarItem.tooltip = "Ink MCP Server — not connected. Click to restart.";
+    return false;
   }
 }
