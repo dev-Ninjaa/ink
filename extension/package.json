@@ -238,6 +238,6 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0"
+    "@modelcontextprotocol/sdk": "^1.31.0"
   }
 }
