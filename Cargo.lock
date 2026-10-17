@@ -270,7 +270,7 @@ checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
 
 [[package]]
 name = "context_optimizer"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "criterion",
  "dependency_graph",
@@ -412,7 +412,7 @@ dependencies = [
 
 [[package]]
 name = "dependency_graph"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "criterion",
  "petgraph",
@@ -786,7 +786,7 @@ dependencies = [
 
 [[package]]
 name = "ink_mcp"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -1119,7 +1119,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "repository_intelligence"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "criterion",
  "dashmap",
@@ -1293,9 +1293,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.151"
+version = "1.0.154"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+checksum = "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6"
 dependencies = [
  "itoa",
  "memchr",
